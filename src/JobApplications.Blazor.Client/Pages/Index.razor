@@ -1,0 +1,95 @@
+@page "/"
+@using System.Net.Http.Json;
+@inject HttpClient HttpClient
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Job Applications</PageTitle>
+
+<RadzenText TextStyle="TextStyle.DisplayH3">Job Applications</RadzenText>
+
+<RadzenButton 
+    Icon="add_circle_outline"
+    Text="Create"
+    ButtonStyle="ButtonStyle.Primary"
+    class="mb-2"
+    Click="@NavigateToCreate"
+/>
+
+<RadzenDataGrid 
+    Data="@jobApplications"
+    TItem="JobApplication"
+    ColumnWidth="175px"
+    AllowFiltering="true"
+    FilterPopupRenderMode="PopupRenderMode.OnDemand"
+    FilterMode="FilterMode.Advanced"
+    AllowPaging="true"
+    AllowSorting="true"
+    RowRender="@RowRender"
+    ExpandMode="@expandMode">
+    <Template Context="jobApplication">
+        <RadzenCard Style="margin-bottom:20px; margin-top: 20px;">
+            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Notes</RadzenText>
+            <RadzenTextArea @bind-Value="jobApplication.Notes" class="w-100" />
+        </RadzenCard>
+    </Template>
+
+    <Columns>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Url">
+            <Template Context="jobApplication">
+                <RadzenLink Path="@jobApplication.Url" Text="@jobApplication.Title" Target="_blank" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Job Id" Property="JobId" Width="75px">
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Contact" Property="ContactName" Width="150px">
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Telephone" Property="Telephone" Width="125px">
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Applied" Property="AppliedDate" Width="150px">
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Title="Status" Property="Status" Width="75px">
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="76px">
+            <Template Context="jobApplication">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@NavigateToEdit" @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@NavigateToDelete" @onclick:stopPropagation="true">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    DataGridExpandMode expandMode = DataGridExpandMode.Single;
+
+    List<JobApplication> jobApplications = new();
+
+    bool hasError;
+
+    void RowRender(RowRenderEventArgs<JobApplication> args)
+    {
+        args.Expandable = !string.IsNullOrWhiteSpace(args.Data.Notes);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        jobApplications = ((List<JobApplication>)(await HttpClient.GetFromJsonAsync("https://localhost:7176/api/jobapplication", typeof(List<JobApplication>)) ?? new()));
+    }
+
+    void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/create");
+    }
+
+    void NavigateToEdit()
+    {
+        NavigationManager.NavigateTo("/create");
+    }
+
+    void NavigateToDelete()
+    {
+        NavigationManager.NavigateTo("/create");
+    }
+}

@@ -1,0 +1,13 @@
+<RadzenAlert AlertStyle="AlertStyle.Danger" ShowIcon="true" Variant="Variant.Flat" Shade="Shade.Default">
+    @Problem.Title
+    <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap" Gap=".015rem">
+        @foreach (var error in Problem.Errors.SelectMany(e => e.Value))
+        {
+            <span class="rz-ml-4 rz-color-white">@error</span>
+        }
+    </RadzenStack>
+</RadzenAlert>
+
+@code {
+    [Parameter] public ProblemDetails Problem { get; set; } = new();
+}
