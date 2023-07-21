@@ -1,6 +1,6 @@
 # JobApplications
 
-This project is an experiment trying to create a solution template with Minimal APIs inc (Carter / MediatR) with and some basic UIs using various technologies
+This project is an experiment trying to create a solution template with Minimal APIs inc (Carter / MediatR) and some basic UIs using various technologies
 
 # Technologies and patterns used 
 
