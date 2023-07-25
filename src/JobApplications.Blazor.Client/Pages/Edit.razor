@@ -1,0 +1,118 @@
+@page "/edit"
+@using System.Net.Http.Json;
+@using System.Text.Json
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject EditJobApplicationState State
+<PageTitle>Create Job Application</PageTitle>
+
+<RadzenText TextStyle="TextStyle.DisplayH3">Create Job Application</RadzenText>
+
+@if (hasError)
+{
+    <RadzenProblemDetails Problem="problemDetails" />
+}
+
+<RadzenTemplateForm TItem="EditJobApplicationState" Data=@State Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <RadzenFieldset Text="Job Application" Data="@State">
+        <RadzenStack Gap="1rem">
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="1">
+                    <RadzenLabel Text="Status" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="1">
+                    <RadzenBadge BadgeStyle="BadgeStyle.Light" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="10">
+                    <RadzenDropDown Data="@applicationStatuses" @bind-Value="@applicationStatus" AllowFiltering="true" Style="width:100%; display: block;" />
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="1">
+                    <RadzenLabel Text="Notes" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="1">
+                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="10">
+                    <RadzenTextArea Name="Notes" @bind-Value="State.Notes" Rows="5" class="w-100" />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenFieldset>
+
+    <RadzenStack 
+        Orientation="Orientation.Horizontal"
+        AlignItems="AlignItems.Start"
+        JustifyContent="JustifyContent.Left"
+        Gap="1rem"
+        Wrap="FlexWrap.Wrap"
+        class="rz-py-6"
+    >
+        <RadzenButton style="width: 120px" IsBusy=@isBusy Click=@Cancel Text="Cancel" />
+        <RadzenButton ButtonType="ButtonType.Submit" style="width: 120px" Icon="save" BusyText="Saving" IsBusy=@isBusy Text="Save" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    bool isBusy;
+    bool hasError;
+    ProblemDetails? problemDetails;
+
+    string[] applicationStatuses = Enum.GetNames<ApplicationStatus>();
+    string applicationStatus = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        applicationStatus = State.Status.ToString();
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine(args);
+    }
+
+    async Task OnSubmit(EditJobApplicationState mode)
+    {
+        try
+        {
+            hasError = false;
+            isBusy = true;
+
+            State.Status = Enum.Parse<ApplicationStatus>(applicationStatus);
+
+            var response = await HttpClient.PatchAsJsonAsync("https://localhost:7176/api/jobapplication", State);
+
+            if (response.IsSuccessStatusCode)
+            {
+                NotificationService.Notify(new NotificationMessage { 
+                    Severity = NotificationSeverity.Info,
+                    Summary = "Success", 
+                    Detail = "Job Application Updated" });
+
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+
+            problemDetails = await JsonSerializer.DeserializeAsync<ProblemDetails>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        isBusy = false;
+        hasError = true;
+    }
+}

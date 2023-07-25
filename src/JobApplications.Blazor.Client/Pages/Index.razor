@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
+@inject EditJobApplicationState State
 
 <PageTitle>Job Applications</PageTitle>
 
@@ -16,7 +17,7 @@
     Click="@NavigateToCreate"
 />
 
-<RadzenDataGrid 
+<RadzenDataGrid @ref="_grid"
     Data="@jobApplications"
     TItem="JobApplication"
     ColumnWidth="175px"
@@ -26,11 +27,12 @@
     AllowPaging="true"
     AllowSorting="true"
     RowRender="@RowRender"
-    ExpandMode="@expandMode">
+    ExpandMode="@expandMode"
+    Filter="@OnFilter">
     <Template Context="jobApplication">
         <RadzenCard Style="margin-bottom:20px; margin-top: 20px;">
             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Notes</RadzenText>
-            <RadzenTextArea @bind-Value="jobApplication.Notes" class="w-100" />
+            <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.P">@jobApplication.Notes</RadzenText>
         </RadzenCard>
     </Template>
 
@@ -52,7 +54,7 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="76px">
             <Template Context="jobApplication">
-                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@NavigateToEdit" @onclick:stopPropagation="true">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click=@(() => NavigateToEdit(jobApplication.Id)) @onclick:stopPropagation="true">
                 </RadzenButton>
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@NavigateToDelete" @onclick:stopPropagation="true">
                 </RadzenButton>
@@ -64,9 +66,36 @@
 @code {
     DataGridExpandMode expandMode = DataGridExpandMode.Single;
 
+    RadzenDataGrid<JobApplication> _grid;
+
     List<JobApplication> jobApplications = new();
 
     bool hasError;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var column = _grid.ColumnsCollection.Where(c => c.Property == "Status").FirstOrDefault();
+
+            if(column != null)
+            {
+                column.FilterValue = ApplicationStatus.Applied;
+                column.FilterOperator = FilterOperator.Equals;
+                column.LogicalFilterOperator = LogicalFilterOperator.Or;
+                column.SecondFilterValue = ApplicationStatus.AwaitingCall;
+                column.SecondFilterOperator = FilterOperator.Equals;
+                _grid.Reload();
+            }
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    void OnFilter(DataGridColumnFilterEventArgs<JobApplication> args)
+    {
+    //
+    }
 
     void RowRender(RowRenderEventArgs<JobApplication> args)
     {
@@ -83,13 +112,19 @@
         NavigationManager.NavigateTo("/create");
     }
 
-    void NavigateToEdit()
+    void NavigateToEdit(int id)
     {
-        NavigationManager.NavigateTo("/create");
+        State.Id = id;
+
+        var selectedItem = jobApplications.Single(j => j.Id == id);
+        State.Status = selectedItem.Status;
+        State.Notes = selectedItem.Notes;
+
+        NavigationManager.NavigateTo("/edit");
     }
 
     void NavigateToDelete()
     {
-        NavigationManager.NavigateTo("/create");
+        NavigationManager.NavigateTo("/delete");
     }
 }

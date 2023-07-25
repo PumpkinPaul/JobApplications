@@ -4,7 +4,6 @@ using FluentValidation;
 using JobApplications.WebApi.Data;
 using JobApplications.WebApi.Models;
 using MediatR;
-using Microsoft.AspNetCore.Cors;
 using System.Text.Json.Serialization;
 
 namespace JobApplications.WebApi.Features.JobApplications;
