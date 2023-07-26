@@ -1,4 +1,4 @@
-@page "/edit"
+@page "/edit/{Id:int}"
 @inject JobApplicationsClient JobApplicationsClient
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
@@ -59,6 +59,8 @@
 </RadzenTemplateForm>
 
 @code {
+    [Parameter] public int Id { get; set; }
+
     bool _isBusy;
     bool _hasError;
     ProblemDetails? _problemDetails;

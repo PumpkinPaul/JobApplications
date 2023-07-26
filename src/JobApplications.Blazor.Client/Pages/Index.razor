@@ -125,7 +125,7 @@
         State.Status = selectedItem.Status;
         State.Notes = selectedItem.Notes;
 
-        NavigationManager.NavigateTo("/edit");
+        NavigationManager.NavigateTo($"/edit/{id}");
     }
 
     async Task ConfirmDelete(int id)
