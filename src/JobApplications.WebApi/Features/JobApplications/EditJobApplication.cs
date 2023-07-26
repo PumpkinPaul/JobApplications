@@ -12,7 +12,7 @@ public sealed class EditJobApplication : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPatch(
-            "api/jobapplication",
+            "api/jobapplication/{id}",
             async (Command command, IMediator mediator) => await mediator.Send(command)
         )
         .WithName(nameof(EditJobApplication))

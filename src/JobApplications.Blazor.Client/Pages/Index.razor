@@ -1,5 +1,6 @@
 @page "/"
 @inject HttpClient HttpClient
+@inject JobApplicationsClient JobApplicationsClient
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
@@ -12,9 +13,9 @@
 
 <RadzenText TextStyle="TextStyle.DisplayH3">Job Applications</RadzenText>
 
-@if (hasError)
+@if (_hasError)
 {
-    <RadzenProblemDetails Problem="problemDetails" />
+    <RadzenProblemDetails Problem="_problemDetails" />
 }
 
 <RadzenButton Icon="add_circle_outline"
@@ -24,7 +25,7 @@
               Click="@NavigateToCreate" />
 
 <RadzenDataGrid @ref="_grid"
-                Data="@jobApplications"
+                Data="@_jobApplications"
                 TItem="JobApplication"
                 ColumnWidth="175px"
                 AllowFiltering="true"
@@ -33,8 +34,7 @@
                 AllowPaging="true"
                 AllowSorting="true"
                 RowRender="@RowRender"
-                ExpandMode="@expandMode"
-                Filter="@OnFilter">
+                ExpandMode="@expandMode">
     <Template Context="jobApplication">
         <RadzenCard Style="margin-bottom:20px; margin-top: 20px;">
             <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Notes</RadzenText>
@@ -43,7 +43,7 @@
     </Template>
 
     <Columns>
-        <RadzenDataGridColumn TItem="JobApplication" Title="Url">
+        <RadzenDataGridColumn TItem="JobApplication" Title="Url" Width="150px">
             <Template Context="jobApplication">
                 <RadzenLink Path="@jobApplication.Url" Text="@jobApplication.Title" Target="_blank" />
             </Template>
@@ -58,7 +58,7 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="JobApplication" Title="Status" Property="Status" Width="75px">
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="76px">
+        <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="62px">
             <Template Context="jobApplication">
                 <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click=@(() => NavigateToEdit(jobApplication.Id)) @onclick:stopPropagation="true">
                 </RadzenButton>
@@ -74,13 +74,13 @@
 @code {
     DataGridExpandMode expandMode = DataGridExpandMode.Single;
 
-    RadzenDataGrid<JobApplication> _grid;
+    RadzenDataGrid<JobApplication> _grid = new();
 
-    List<JobApplication> jobApplications = new();
+    List<JobApplication> _jobApplications = new();
 
-    bool isBusy;
-    bool hasError;
-    ProblemDetails? problemDetails;
+    bool _isBusy;
+    bool _hasError;
+    ProblemDetails? _problemDetails;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -102,11 +102,6 @@
         return base.OnAfterRenderAsync(firstRender);
     }
 
-    void OnFilter(DataGridColumnFilterEventArgs<JobApplication> args)
-    {
-    //
-    }
-
     void RowRender(RowRenderEventArgs<JobApplication> args)
     {
         args.Expandable = !string.IsNullOrWhiteSpace(args.Data.Notes);
@@ -114,7 +109,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        jobApplications = ((List<JobApplication>)(await HttpClient.GetFromJsonAsync("https://localhost:7176/api/jobapplication", typeof(List<JobApplication>)) ?? new()));
+        _jobApplications = await JobApplicationsClient.Get();
     }
 
     void NavigateToCreate()
@@ -126,7 +121,7 @@
     {
         State.Id = id;
 
-        var selectedItem = jobApplications.Single(j => j.Id == id);
+        var selectedItem = _jobApplications.Single(j => j.Id == id);
         State.Status = selectedItem.Status;
         State.Notes = selectedItem.Notes;
 
@@ -144,16 +139,17 @@
     {
         try
         {
-            hasError = false;
-            isBusy = true;
+            _hasError = false;
+            _isBusy = true;
 
-            var response = await HttpClient.DeleteAsync($"https://localhost:7176/api/jobapplication/{id}");
+            await JobApplicationsClient.Delete(id);
 
-            if (response.IsSuccessStatusCode)
+            var deleted = _jobApplications.FirstOrDefault(job => job.Id == id);
+            if (deleted != null)
             {
-                var deleted = jobApplications.FirstOrDefault(job => job.Id == id);
-                if (deleted != null)
-                    jobApplications.Remove(deleted);
+                _jobApplications.Remove(deleted);
+
+                await _grid.Reload();
 
                 NotificationService.Notify(new NotificationMessage
                     {
@@ -161,24 +157,15 @@
                         Summary = "Success",
                         Detail = "Job Application Deleted"
                     });
-
-                await _grid.Reload();
-                return;
             }
-
-            problemDetails = await JsonSerializer.DeserializeAsync<ProblemDetails>(
-                await response.Content.ReadAsStreamAsync(), 
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+            return;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            Console.WriteLine(ex);
+            _problemDetails = new ProblemDetails { Title = ex.Message };
         }
 
-        isBusy = false;
-        hasError = true;
+        _isBusy = false;
+        _hasError = true;
     }
 }

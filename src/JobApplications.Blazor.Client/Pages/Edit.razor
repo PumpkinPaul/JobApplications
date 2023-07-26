@@ -1,5 +1,5 @@
 @page "/edit"
-@inject HttpClient HttpClient
+@inject JobApplicationsClient JobApplicationsClient
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 @inject DialogService DialogService
@@ -12,9 +12,9 @@
 
 <RadzenText TextStyle="TextStyle.DisplayH3">Create Job Application</RadzenText>
 
-@if (hasError)
+@if (_hasError)
 {
-    <RadzenProblemDetails Problem="problemDetails" />
+    <RadzenProblemDetails Problem="_problemDetails" />
 }
 
 <RadzenTemplateForm TItem="EditJobApplicationState" Data=@State Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
@@ -29,7 +29,7 @@
                     <RadzenBadge BadgeStyle="BadgeStyle.Light" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="10">
-                    <RadzenDropDown Data="@applicationStatuses" @bind-Value="@applicationStatus" AllowFiltering="true" Style="width:100%; display: block;" />
+                    <RadzenDropDown Data="@_applicationStatuses" @bind-Value="@_applicationStatus" AllowFiltering="true" Style="width:100%; display: block;" />
                 </RadzenColumn>
             </RadzenRow>
 
@@ -47,30 +47,28 @@
         </RadzenStack>
     </RadzenFieldset>
 
-    <RadzenStack 
-        Orientation="Orientation.Horizontal"
-        AlignItems="AlignItems.Start"
-        JustifyContent="JustifyContent.Left"
-        Gap="1rem"
-        Wrap="FlexWrap.Wrap"
-        class="rz-py-6"
-    >
-        <RadzenButton style="width: 120px" IsBusy=@isBusy Click=@Cancel Text="Cancel" />
-        <RadzenButton ButtonType="ButtonType.Submit" style="width: 120px" Icon="save" BusyText="Saving" IsBusy=@isBusy Text="Save" />
+    <RadzenStack Orientation="Orientation.Horizontal"
+                 AlignItems="AlignItems.Start"
+                 JustifyContent="JustifyContent.Left"
+                 Gap="1rem"
+                 Wrap="FlexWrap.Wrap"
+                 class="rz-py-6">
+        <RadzenButton style="width: 120px" IsBusy=@_isBusy Click=@Cancel Text="Cancel" />
+        <RadzenButton ButtonType="ButtonType.Submit" style="width: 120px" Icon="save" BusyText="Saving" IsBusy=@_isBusy Text="Save" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
-    bool isBusy;
-    bool hasError;
-    ProblemDetails? problemDetails;
+    bool _isBusy;
+    bool _hasError;
+    ProblemDetails? _problemDetails;
 
-    string[] applicationStatuses = Enum.GetNames<ApplicationStatus>();
-    string applicationStatus = "";
+    string[] _applicationStatuses = Enum.GetNames<ApplicationStatus>();
+    string _applicationStatus = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        applicationStatus = State.Status.ToString();
+        _applicationStatus = State.Status.ToString();
     }
 
     void Cancel()
@@ -87,35 +85,29 @@
     {
         try
         {
-            hasError = false;
-            isBusy = true;
+            _hasError = false;
+            _isBusy = true;
 
-            State.Status = Enum.Parse<ApplicationStatus>(applicationStatus);
+            State.Status = Enum.Parse<ApplicationStatus>(_applicationStatus);
 
-            var response = await HttpClient.PatchAsJsonAsync("https://localhost:7176/api/jobapplication", State);
+            await JobApplicationsClient.Edit(State);
 
-            if (response.IsSuccessStatusCode)
+            NotificationService.Notify(new NotificationMessage
             {
-                NotificationService.Notify(new NotificationMessage { 
-                    Severity = NotificationSeverity.Info,
-                    Summary = "Success", 
-                    Detail = "Job Application Updated" });
-
-                NavigationManager.NavigateTo("/");
-                return;
-            }
-
-            problemDetails = await JsonSerializer.DeserializeAsync<ProblemDetails>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
+                Severity = NotificationSeverity.Info,
+                Summary = "Success",
+                Detail = "Job Application Updated"
             });
+
+            NavigationManager.NavigateTo("/");
+            return;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            Console.WriteLine(ex);
+            _problemDetails = new ProblemDetails { Title = ex.Message };
         }
 
-        isBusy = false;
-        hasError = true;
+        _isBusy = false;
+        _hasError = true;
     }
 }

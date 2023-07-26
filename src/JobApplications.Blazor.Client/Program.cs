@@ -12,6 +12,7 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddHttpClient<JobApplicationsClient>(client => client.BaseAddress = new Uri("https://localhost:7176/api/"));
 builder.Services.AddScoped<EditJobApplicationState>();
 
 await builder.Build().RunAsync();

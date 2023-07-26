@@ -1,5 +1,5 @@
 @page "/create"
-@inject HttpClient HttpClient
+@inject JobApplicationsClient JobApplicationsClient
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 @inject EditJobApplicationState State
@@ -11,126 +11,124 @@
 
 <RadzenText TextStyle="TextStyle.DisplayH3">Create Job Application</RadzenText>
 
-@if (hasError)
+@if (_hasError)
 {
-    <RadzenProblemDetails Problem="problemDetails" />
+    <RadzenProblemDetails Problem="_problemDetails" />
 }
 
-<RadzenTemplateForm TItem="JobApplication" Data=@jobApplication Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
-    <RadzenFieldset Text="Job Application" Data="@jobApplication">
+<RadzenTemplateForm TItem="JobApplication" Data=@_jobApplication Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <RadzenFieldset Text="Job Application" Data="@_jobApplication">
         <RadzenStack Gap="1rem">
             <RadzenRow AlignItems="AlignItems.Center">
                 <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenLabel Text="Url" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeLG="1">
+                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextBox Name="Url" @bind-Value="_jobApplication.Url" MaxLength="255" Disabled="@_isBusy" class="w-100" />
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeLG="3">
                     <RadzenLabel Text="Job Id" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="2">
-                    <RadzenTextBox Name="JobId" @bind-Value="jobApplication.JobId" MaxLength="50" Disabled="@isBusy" class="w-100" />
+                    <RadzenTextBox Name="JobId" @bind-Value="_jobApplication.JobId" MaxLength="50" Disabled="@_isBusy" class="w-100" />
                     <RadzenRequiredValidator Text="Job Id is required" Component="JobId" Popup="true" Style="position: absolute" />
                 </RadzenColumn>
             </RadzenRow>
 
             <RadzenRow AlignItems="AlignItems.Center">
                 <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenLabel Text="Job Ref" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeLG="1">
+                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenTextBox Name="JobRef" @bind-Value="_jobApplication.JobRef" MaxLength="50" Disabled="@_isBusy" class="w-100" />
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeLG="2">
                     <RadzenLabel Text="Contact Name" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenTextBox Name="ContactName" @bind-Value="jobApplication.ContactName" MaxLength="50" Disabled="@isBusy" class="w-100" />
+                    <RadzenTextBox Name="ContactName" @bind-Value="_jobApplication.ContactName" MaxLength="50" Disabled="@_isBusy" class="w-100" />
                     <RadzenRequiredValidator Text="Contact Name is required" Component="ContactName" Popup="true" Style="position: absolute" />
                 </RadzenColumn>
             </RadzenRow>
 
             <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
-                    <RadzenLabel Text="Url" />
+                <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenLabel Text="Company" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
-                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="9">
-                    <RadzenTextBox Name="Url" @bind-Value="jobApplication.Url" MaxLength="255" Disabled="@isBusy" class="w-100" />
-                </RadzenColumn>
-            </RadzenRow>
-
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
-                    <RadzenLabel Text="Job Ref" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeLG="1">
                     <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="2">
-                    <RadzenTextBox Name="JobRef" @bind-Value="jobApplication.JobRef" MaxLength="50" Disabled="@isBusy" class="w-100" />
+                    <RadzenTextBox Name="Company" @bind-Value="_jobApplication.Company" MaxLength="50" Disabled="@_isBusy" class="w-100" />
                 </RadzenColumn>
             </RadzenRow>
 
             <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeMD="2">
                     <RadzenLabel Text="Telephone" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeLG="1">
                     <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="2">
-                    <RadzenTextBox Name="Telephone" @bind-Value="jobApplication.Telephone" MaxLength="50" Disabled="@isBusy" class="w-100" />
+                    <RadzenTextBox Name="Telephone" @bind-Value="_jobApplication.Telephone" MaxLength="50" Disabled="@_isBusy" class="w-100" />
                 </RadzenColumn>
             </RadzenRow>
 
             <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeMD="2">
                     <RadzenLabel Text="Email" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeLG="1">
                     <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenTextBox Name="Email" @bind-Value="jobApplication.Email" MaxLength="100" Disabled="@isBusy" class="w-100" />
+                    <RadzenTextBox Name="Email" @bind-Value="_jobApplication.Email" MaxLength="100" Disabled="@_isBusy" class="w-100" />
                 </RadzenColumn>
             </RadzenRow>
 
             <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
-                    <RadzenLabel Text="Company" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
-                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
-                </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="2">
-                    <RadzenTextBox Name="Company" @bind-Value="jobApplication.Company" MaxLength="50" Disabled="@isBusy" class="w-100" />
-                </RadzenColumn>
-            </RadzenRow>
-
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="1">
                     <RadzenLabel Text="Notes" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="1">
+                <RadzenColumn Size="12" SizeLG="1">
                     <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
                 </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="10">
-                    <RadzenTextArea Name="Notes" @bind-Value="jobApplication.Notes" Rows="5" class="w-100" />
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextArea Name="Notes" @bind-Value="_jobApplication.Notes" Rows="5" class="w-100" />
                 </RadzenColumn>
             </RadzenRow>
         </RadzenStack>
     </RadzenFieldset>
 
-    <RadzenStack 
-        Orientation="Orientation.Horizontal"
-        AlignItems="AlignItems.Start"
-        JustifyContent="JustifyContent.Left"
-        Gap="1rem"
-        Wrap="FlexWrap.Wrap"
-        class="rz-py-6"
-    >
-        <RadzenButton style="width: 120px" IsBusy=@isBusy Click=@Cancel Text="Cancel" />
-        <RadzenButton ButtonType="ButtonType.Submit" style="width: 120px" Icon="save" BusyText="Saving" IsBusy=@isBusy Text="Save" />
+    <RadzenStack Orientation="Orientation.Horizontal"
+                 AlignItems="AlignItems.Start"
+                 JustifyContent="JustifyContent.Left"
+                 Gap="1rem"
+                 Wrap="FlexWrap.Wrap"
+                 class="rz-py-6">
+        <RadzenButton style="width: 120px" IsBusy=@_isBusy Click=@Cancel Text="Cancel" />
+        <RadzenButton ButtonType="ButtonType.Submit" style="width: 120px" Icon="save" BusyText="Saving" IsBusy=@_isBusy Text="Save" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
-    JobApplication jobApplication = new();
-    bool isBusy;
-    bool hasError;
-    ProblemDetails? problemDetails;
+    JobApplication _jobApplication = new();
+    bool _isBusy;
+    bool _hasError;
+    ProblemDetails? _problemDetails;
 
     void Cancel()
     {
@@ -146,33 +144,27 @@
     {
         try
         {
-            hasError = false;
-            isBusy = true;
+            _hasError = false;
+            _isBusy = true;
 
-            var response = await HttpClient.PostAsJsonAsync("https://localhost:7176/api/jobapplication", jobApplication);
+            await JobApplicationsClient.Create(_jobApplication);
 
-            if (response.IsSuccessStatusCode)
-            {
-                NotificationService.Notify(new NotificationMessage { 
+            NotificationService.Notify(new NotificationMessage
+                {
                     Severity = NotificationSeverity.Info,
-                    Summary = "Success", 
-                    Detail = "Job Application Created" });
+                    Summary = "Success",
+                    Detail = "Job Application Created"
+                });
 
-                NavigationManager.NavigateTo("/");
-                return;
-            }
-
-            problemDetails = await JsonSerializer.DeserializeAsync<ProblemDetails>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            NavigationManager.NavigateTo("/");
+            return;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            Console.WriteLine(ex);
+            _problemDetails = new ProblemDetails { Title = ex.Message };
         }
 
-        isBusy = false;
-        hasError = true;
+        _isBusy = false;
+        _hasError = true;
     }
 }
