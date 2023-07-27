@@ -7,5 +7,6 @@ public enum ApplicationStatus
     Interview,
     Expired,
     Declined,
-    Filled
+    Filled,
+    Dead
 }
