@@ -3,10 +3,9 @@ import JobApplications from './JobApplications'
 
 function App() {
   return (
-    <div className="App">
+    <main className="text-foreground bg-background md:container md:mx-auto p-5">
       <JobApplications />
-      <button className="btn btn-primary" onClick={() => alert("Create a new job applicaton")}>Hello</button>
-    </div>
+    </main>
   );
 }
 

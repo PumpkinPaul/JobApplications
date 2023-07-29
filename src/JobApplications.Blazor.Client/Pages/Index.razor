@@ -56,7 +56,16 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="JobApplication" Title="Applied" Property="AppliedDate" Width="150px">
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="JobApplication" Title="Status" Property="Status" Width="75px">
+        <RadzenDataGridColumn 
+            TItem="JobApplication" 
+            Title="Status" 
+            Property="Status" 
+            Width="75px"
+            FilterValue="@_firstFilerValue"
+            FilterOperator = "@FilterOperator.Equals"
+            LogicalFilterOperator = "@LogicalFilterOperator.Or"
+            SecondFilterValue="@_secondFilterValue"
+            SecondFilterOperator = "@FilterOperator.Equals">
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="62px">
             <Template Context="jobApplication">
@@ -78,23 +87,28 @@
 
     List<JobApplication> _jobApplications = new();
 
+    object _firstFilerValue = (int)ApplicationStatus.Applied;
+    object _secondFilterValue = (int)ApplicationStatus.AwaitingCall;
+
     bool _isBusy;
     bool _hasError;
     ProblemDetails? _problemDetails;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
+        //return base.OnAfterRenderAsync(firstRender);
+
         //if (firstRender)
         {
             var column = _grid.ColumnsCollection.Where(c => c.Property == "Status").FirstOrDefault();
 
             if (column != null)
             {
-                column.FilterValue = ApplicationStatus.Applied;
-                column.FilterOperator = FilterOperator.Equals;
-                column.LogicalFilterOperator = LogicalFilterOperator.Or;
-                column.SecondFilterValue = ApplicationStatus.AwaitingCall;
-                column.SecondFilterOperator = FilterOperator.Equals;
+                //column.FilterValue = ApplicationStatus.Applied;
+                //column.FilterOperator = FilterOperator.Equals;
+                //column.LogicalFilterOperator = LogicalFilterOperator.Or;
+                //column.SecondFilterValue = ApplicationStatus.AwaitingCall;
+                //column.SecondFilterOperator = FilterOperator.Equals;
                 _grid.Reload();
             }
         }
