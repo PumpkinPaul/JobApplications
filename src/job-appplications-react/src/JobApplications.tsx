@@ -1,17 +1,21 @@
+import { Key } from 'react';
 import {
   useEffect,
   useState,
   useMemo,
-  useCallback
+  useCallback,
 } from 'react';
 import {
   Chip,
   Button,
   Dropdown,
+  DropdownItem,
   DropdownMenu,
   DropdownTrigger,
   Input,
   Link,
+  Pagination,
+  Selection,
   Spacer,
   Table,
   TableHeader,
@@ -28,6 +32,7 @@ import { SearchIcon } from "./SearchIcon";
 import { ChevronDownIcon } from "./ChevronDownIcon";
 
 type ApplicationStatus = "Applied" | "AwaitingCall" | "Interview" | "Expired" | "Declined" | "Filled" | "Dead";
+const statusOptions = ["Applied", "AwaitingCall", "Interview", "Expired", "Declined", "Filled", "Dead"];
 
 interface IJobApplication {
   id: number;
@@ -54,24 +59,74 @@ const statusColorMap: statusColor = {
   "Dead": "warning",
 };
 
-export default function JobApplications() {
-  const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const DEFAULT_STATUS_FILTERS = ["Applied", "AwaitingCall", "Interview"];
 
+export default function JobApplications() {
   const [jobApplications, setJobApplications] = useState<IJobApplication[]>([]);
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [filterValue, setFilterValue] = useState<string | undefined>("");
+  const [statusFilter, setStatusFilter] = useState<Selection>(new Set(DEFAULT_STATUS_FILTERS)); //("all)")
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState({
-    column: "age",
+    column: "appliedDate",
     direction: "ascending",
   });
+
+  const [page, setPage] = useState(1);
+
+  const hasSearchFilter = Boolean(filterValue);
+
+  const filteredItems = useMemo(() => {
+    let filteredJobApplications = [...jobApplications];
+
+    if (hasSearchFilter) {
+      filteredJobApplications = filteredJobApplications.filter((jobApplication) =>
+        jobApplication.contactName.toLowerCase().includes(filterValue?.toLowerCase() || ""),
+      );
+    }
+    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+      filteredJobApplications = filteredJobApplications.filter((user) =>
+        Array.from(statusFilter).includes(user.status),
+      );
+    }
+
+    return filteredJobApplications;
+  }, [hasSearchFilter, jobApplications, filterValue, statusFilter]);
+
+  const pages = Math.ceil(filteredItems.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return filteredItems.slice(start, end);
+  }, [page, filteredItems, rowsPerPage]);
+
+  const sortedJobApplications = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const first = 1;//a[sortDescriptor.column];
+      const second = 2;//b[sortDescriptor.column];
+      const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+    });
+  }, [sortDescriptor, items]);
+
+  const onNextPage = useCallback(() => {
+    if (page < pages) {
+      setPage(page + 1);
+    }
+  }, [page, pages]);
+
+  const onPreviousPage = useCallback(() => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  }, [page]);
 
   const onSearchChange = useCallback((value: string) => {
     if (value) {
       setFilterValue(value);
-      //setPage(1);
+      setPage(1);
     } else {
       setFilterValue("");
     }
@@ -79,7 +134,7 @@ export default function JobApplications() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex gap-4">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -88,11 +143,11 @@ export default function JobApplications() {
             startContent={<SearchIcon />}
             value={filterValue}
             onClear={() => setFilterValue("")}
-          //onValueChange={onSearchChange}
+            onChange={(e) => onSearchChange(e.target.value)}
           />
-          {/*<div className="flex gap-3">
+          <div className="flex gap-3">
             <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
+              <DropdownTrigger>
                 <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
                   Status
                 </Button>
@@ -106,64 +161,51 @@ export default function JobApplications() {
                 onSelectionChange={setStatusFilter}
               >
                 {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
+                  <DropdownItem key={status} className="capitalize">
+                    {status}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
+            <Button color="primary" endContent={
+              <PlusIcon width={undefined} height={undefined} />
+            }>
               Add New
             </Button>
           </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {jobApplications.length} users</span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-                */}
         </div>
       </div>
     );
   }, [
     filterValue,
-    //statusFilter,
-    //visibleColumns,
-    //onRowsPerPageChange,
-    //users.length,
-    //onSearchChange,
-    //hasSearchFilter,
+    statusFilter,
+    onSearchChange,
   ]);
+
+  const bottomContent = useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex justify-between items-center">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          isDisabled={hasSearchFilter}
+          page={page}
+          total={pages}
+          onChange={setPage}
+        />
+        <div className="hidden sm:flex w-[30%] justify-end gap-2">
+          <Button isDisabled={hasSearchFilter} size="sm" variant="flat" onPress={onPreviousPage}>
+            Previous
+          </Button>
+          <Button isDisabled={hasSearchFilter} size="sm" variant="flat" onPress={onNextPage}>
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  }, [page, pages, hasSearchFilter, onNextPage, onPreviousPage]);
 
   useEffect(() => {
     fetch('https://localhost:7176/api/jobapplication')
@@ -173,30 +215,45 @@ export default function JobApplications() {
 
   return (
     <>
-      <h1 className="text-3xl">Job Applications</h1>
-      <Spacer y={8} />
-      <Button color="primary" onPress={() => alert("Create a new job applicaton")}>Create New</Button>
+      <h1 className="text-6xl">Job Applications</h1>
       <Spacer y={8} />
       <JobApplicationsTable
-        jobApplications={jobApplications}
+        jobApplications={sortedJobApplications}
         topContent={topContent}
+        bottomContent={bottomContent}
+        sortDescriptor={sortDescriptor}
+        setSortDescriptor={setSortDescriptor}
       />
     </>
   );
 }
 
-const JobApplicationsTable = (
-  { jobApplications, topContent }: { jobApplications: IJobApplication[], topContent: any }
-): JSX.Element => (
+const JobApplicationsTable = ({
+  jobApplications,
+  topContent,
+  bottomContent,
+  sortDescriptor,
+  setSortDescriptor,
+}: {
+  jobApplications: IJobApplication[],
+  topContent: any,
+  bottomContent: any,
+  sortDescriptor: any,
+  setSortDescriptor: any,
+}): JSX.Element => (
   <Table
     aria-label="Job applications table"
     isStriped
     isHeaderSticky
-    /*sortDescriptor={sortDescriptor}*/
+    bottomContent={bottomContent}
+    bottomContentPlacement="outside"
+    classNames={{
+      wrapper: "max-h-[382px]",
+    }}
+    sortDescriptor={sortDescriptor}
     topContent={topContent}
     topContentPlacement="outside"
-  /*onSelectionChange={setSelectedKeys}*/
-  /*onSortChange={setSortDescriptor}*/
+    onSortChange={setSortDescriptor}
   >
     <TableHeader>
       <TableColumn>Title</TableColumn>
@@ -205,10 +262,11 @@ const JobApplicationsTable = (
       <TableColumn>Contact</TableColumn>
       <TableColumn>Telephone</TableColumn>
       <TableColumn>Applied</TableColumn>
-      <TableColumn>Status</TableColumn>
+      <TableColumn allowsSorting={true}>Status</TableColumn>
+      <TableColumn>Actions</TableColumn>
     </TableHeader>
 
-    <TableBody>
+    <TableBody emptyContent={"No job applications found"}>
       {jobApplications.map(({
         id,
         url,
@@ -248,9 +306,24 @@ const JobApplicationsTable = (
           <TableCell>{telephone}</TableCell>
           <TableCell>{new Date(appliedDate).toDateString()}</TableCell>
           <TableCell>
-            <Chip color={statusColorMap[status] || "success"} size="sm" variant="dot">
+            <Chip className="capitalize border-none gap-1" color={statusColorMap[status] || "success"} size="sm" variant="dot">
               {status}
             </Chip>
+          </TableCell>
+          <TableCell>
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown className="bg-background border-1 border-default-200">
+                <DropdownTrigger>
+                  <Button isIconOnly radius="full" size="sm" variant="light">
+                    <VerticalDotsIcon className="text-default-400" width={undefined} height={undefined} />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem>Edit</DropdownItem>
+                  <DropdownItem>Delete</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
           </TableCell>
         </TableRow>
       )}
