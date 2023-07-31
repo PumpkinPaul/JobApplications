@@ -1,9 +1,5 @@
-import {
-  Key,
-} from "react";
-import {
-  Selection,
-} from "@nextui-org/react";
+import { Key } from "react";
+import { Selection } from "@nextui-org/react";
 import {
   Button,
   Dropdown,
@@ -12,6 +8,7 @@ import {
   DropdownTrigger,
   Input,
 } from "@nextui-org/react";
+import RouterLink from "./RouterLink";
 import { PlusIcon } from "../icons/PlusIcon";
 import { SearchIcon } from "../icons/SearchIcon";
 import { ChevronDownIcon } from "../icons/ChevronDownIcon";
@@ -65,9 +62,13 @@ const JobApplicationsTableTopContent = ({
             ))}
           </DropdownMenu>
         </Dropdown>
-        <Button color="primary" endContent={
-          <PlusIcon width={undefined} height={undefined} />
-        }>
+        <Button
+          color="primary"
+          href="/create"
+          as={RouterLink}
+          endContent={
+            <PlusIcon width={undefined} height={undefined} />
+          }>
           Add New
         </Button>
       </div>

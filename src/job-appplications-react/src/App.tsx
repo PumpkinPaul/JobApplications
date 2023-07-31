@@ -1,11 +1,15 @@
+import { Outlet } from "react-router-dom";
 import './App.css';
 import JobApplications from './components/JobApplications'
 
 function App() {
   return (
-    <main className="text-foreground bg-background md:container md:mx-auto p-5">
+    <div>
       <JobApplications />
-    </main>
+      <div id="detail">
+        <Outlet />
+      </div>
+    </div>
   );
 }
 

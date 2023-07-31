@@ -1,9 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { NextUIProvider } from "@nextui-org/react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import App from './App';
+import ErrorPage from './ErrorPage';
+
+import JobApplications from './components/JobApplications';
+import JobApplicationsTableCreate from './components/JobApplicationsTableCreate';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <JobApplications />,
+    errorElement: <ErrorPage />,
+  }, {
+    path: "create",
+    element: <JobApplicationsTableCreate />,
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +30,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <NextUIProvider>
-      <App />
+      <main className="text-foreground bg-background md:container md:mx-auto p-5">
+        <RouterProvider router={router} />
+      </main>
     </NextUIProvider>
   </React.StrictMode>
 );

@@ -1,4 +1,6 @@
-import { IJobApplication, IHeaderColumn, statusColor } from "./JobApplications";
+import {
+  SortDescriptor
+} from "@react-types/shared";
 
 import {
   Chip,
@@ -17,6 +19,13 @@ import {
   User,
 } from "@nextui-org/react";
 
+import {
+  IJobApplication,
+  IHeaderColumn,
+  statusColor
+} from "./JobApplications";
+
+
 import { VerticalDotsIcon } from "../icons/VerticalDotsIcon";
 
 const statusColorMap: statusColor = {
@@ -29,6 +38,15 @@ const statusColorMap: statusColor = {
   "Dead": "warning",
 };
 
+interface Props {
+  jobApplications: IJobApplication[],
+  headerColumns: IHeaderColumn[],
+  topContent: any,
+  bottomContent: any,
+  sortDescriptor: SortDescriptor,
+  setSortDescriptor: (descriptor: SortDescriptor) => any,
+}
+
 export default function JobApplicationsTable({
   jobApplications,
   headerColumns,
@@ -36,14 +54,7 @@ export default function JobApplicationsTable({
   bottomContent,
   sortDescriptor,
   setSortDescriptor,
-}: {
-  jobApplications: IJobApplication[],
-  headerColumns: IHeaderColumn[],
-  topContent: any,
-  bottomContent: any,
-  sortDescriptor: any,
-  setSortDescriptor: any,
-}): JSX.Element {
+}: Props): JSX.Element {
   return <Table
     aria-label="Job applications table"
     isStriped
@@ -73,7 +84,8 @@ export default function JobApplicationsTable({
     <TableBody emptyContent={"No job applications found"}>
       {jobApplications.map(({
         id, url, title, jobId, jobRef, contactName, telephone, appliedDate, status,
-      }: IJobApplication) => <TableRow key={id}>
+      }: IJobApplication) => (
+        <TableRow key={id}>
           <TableCell>
             <Link color="primary"
               href={url}
@@ -120,7 +132,7 @@ export default function JobApplicationsTable({
             </div>
           </TableCell>
         </TableRow>
-      )}
+      ))}
     </TableBody>
   </Table>;
 }

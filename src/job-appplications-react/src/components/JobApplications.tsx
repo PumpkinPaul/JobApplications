@@ -6,6 +6,7 @@ import {
 } from 'react';
 import {
   Selection,
+  SortDescriptor,
   Spacer,
 } from "@nextui-org/react";
 import JobApplicationsTable from "./JobApplicationsTable";
@@ -51,10 +52,10 @@ const DEFAULT_STATUS_FILTERS = ["Applied", "AwaitingCall", "Interview"];
 
 export default function JobApplications() {
   const [jobApplications, setJobApplications] = useState<IJobApplication[]>([]);
-  const [filterValue, setFilterValue] = useState<string | undefined>("");
+  const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState<Selection>(new Set(DEFAULT_STATUS_FILTERS)); //("all)")
   const [rowsPerPage] = useState(5);
-  const [sortDescriptor, setSortDescriptor] = useState({
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "appliedDate",
     direction: "ascending",
   });
