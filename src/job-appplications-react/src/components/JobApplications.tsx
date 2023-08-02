@@ -9,6 +9,7 @@ import {
   SortDescriptor,
   Spacer,
 } from "@nextui-org/react";
+import { useLoaderData } from "react-router-dom";
 import JobApplicationsTable from "./JobApplicationsTable";
 import JobApplicationsTableTopContent from "./JobApplicationsTableTopContent";
 import JobApplicationsTableBottomContent from "./JobApplicationsTableBottomContent";
@@ -122,11 +123,11 @@ export default function JobApplications() {
     }
   }, []);
 
+  const data = useLoaderData() as IJobApplication[];
   useEffect(() => {
-    fetch('https://localhost:7176/api/jobapplication')
-      .then((response) => response.json())
-      .then((json) => setJobApplications(json || []));
-  }, [])
+    setJobApplications(data);
+  }, [data]);
+
 
   return (
     <>

@@ -7,21 +7,41 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import App from './App';
 import ErrorPage from './ErrorPage';
 
 import JobApplications from './components/JobApplications';
 import JobApplicationsTableCreate from './components/JobApplicationsTableCreate';
 
 //https://reactrouter.com/en/main/start/tutorial
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <JobApplications />,
     errorElement: <ErrorPage />,
+    loader: async () => {
+      return fetch('https://localhost:7176/api/jobapplication')
+        .then((response) => response.json())
+    }
   }, {
     path: "create",
     element: <JobApplicationsTableCreate />,
+    action: async ({ request, params }) => {
+      console.log('action: async ({ request, params })');
+
+      switch (request.method) {
+        case "POST": {
+          let formData = await request.formData();
+          console.log('/create:POST', formData);
+          let contactName = formData.get("contactName");
+          //return fakeUpdateProject(name);
+          return {};
+        }
+        default: {
+          throw new Response("", { status: 405 });
+        }
+      }
+    },
   },
 ]);
 
@@ -31,7 +51,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <NextUIProvider>
-      <main className="text-foreground bg-background md:container md:mx-auto p-5">
+      <main className="text-foreground bg-background md:container md:mx-auto p-5 ">
         <RouterProvider router={router} />
       </main>
     </NextUIProvider>
