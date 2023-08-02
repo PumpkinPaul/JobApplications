@@ -28,7 +28,7 @@
                 Data="@_jobApplications"
                 TItem="JobApplication"
                 ColumnWidth="175px"
-                AllowFiltering="true"
+                AllowFiltering="false"
                 FilterPopupRenderMode="PopupRenderMode.OnDemand"
                 FilterMode="FilterMode.Advanced"
                 AllowPaging="true"
@@ -60,12 +60,7 @@
             TItem="JobApplication" 
             Title="Status" 
             Property="Status" 
-            Width="75px"
-            FilterValue="@_firstFilerValue"
-            FilterOperator = "@FilterOperator.Equals"
-            LogicalFilterOperator = "@LogicalFilterOperator.Or"
-            SecondFilterValue="@_secondFilterValue"
-            SecondFilterOperator = "@FilterOperator.Equals">
+            Width="75px">
         </RadzenDataGridColumn>
         <RadzenDataGridColumn TItem="JobApplication" Context="jobApplication" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="62px">
             <Template Context="jobApplication">
@@ -109,7 +104,7 @@
                 //column.LogicalFilterOperator = LogicalFilterOperator.Or;
                 //column.SecondFilterValue = ApplicationStatus.AwaitingCall;
                 //column.SecondFilterOperator = FilterOperator.Equals;
-                _grid.Reload();
+                //_grid.Reload();
             }
         }
 

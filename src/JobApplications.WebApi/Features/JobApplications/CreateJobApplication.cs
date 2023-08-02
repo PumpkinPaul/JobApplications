@@ -24,6 +24,8 @@ public sealed class CreateJobApplication : ICarterModule
 
     public sealed class Command : IRequest<IResult>
     {
+        public string Title { get; set; } = "";
+
         public string Url { get; set; } = "";
 
         public string JobId { get; set; } = "";
@@ -50,6 +52,7 @@ public sealed class CreateJobApplication : ICarterModule
     {
         public CommandValidator()
         {
+            RuleFor(r => r.Title).NotEmpty().MaximumLength(128);
             RuleFor(r => r.Url).MaximumLength(255).NotEqual("error");
             RuleFor(r => r.JobId).NotEmpty().MaximumLength(50);
             RuleFor(r => r.JobRef).MaximumLength(50);

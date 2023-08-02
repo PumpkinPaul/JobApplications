@@ -15,6 +15,18 @@
         <RadzenStack Gap="1rem">
             <RadzenRow AlignItems="AlignItems.Center">
                 <RadzenColumn Size="12" SizeMD="2">
+                    <RadzenLabel Text="Title" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeLG="1">
+                    <RadzenBadge BadgeStyle="BadgeStyle.Light" Text="optional" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="9">
+                    <RadzenTextBox Name="Title" @bind-Value="JobApplication.Title" MaxLength="128" Disabled="@IsBusy" class="w-100" />
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="2">
                     <RadzenLabel Text="Url" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeLG="1">

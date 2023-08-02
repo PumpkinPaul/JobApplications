@@ -13,6 +13,7 @@ import ErrorPage from './ErrorPage';
 import JobApplications from './components/JobApplications';
 import JobApplicationsTableCreate from './components/JobApplicationsTableCreate';
 
+//https://reactrouter.com/en/main/start/tutorial
 const router = createBrowserRouter([
   {
     path: "/",

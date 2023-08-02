@@ -31,6 +31,8 @@ public class GetJobApplications : ICarterModule
 
         public string ContactName { get; init; } = "";
         
+        public string Company { get; init; } = "";
+
         public string Telephone { get; init; } = "";
         
         public DateTime AppliedDate { get; init; }
@@ -40,7 +42,7 @@ public class GetJobApplications : ICarterModule
 
 		public string Notes { get; init; } = "";
 
-		public string Title => Url.Split('/').Last();
+		public string Title { get; init; } = "";
     }
 
     public sealed class MappingProfile : Profile

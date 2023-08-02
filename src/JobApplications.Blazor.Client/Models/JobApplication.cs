@@ -6,6 +6,8 @@ public class JobApplication
 {
     public int Id { get; init; }
 
+    public string Title { get; set; } = "";
+
     public string JobId { get; set; } = "";
 
     public string JobRef { get; set; } = "";
@@ -26,6 +28,4 @@ public class JobApplication
     public ApplicationStatus Status { get; set; }
 
     public string Notes { get; set; } = "";
-
-    public string Title => Url.Split('/').Last();
 }

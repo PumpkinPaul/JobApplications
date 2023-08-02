@@ -30,12 +30,12 @@ import { VerticalDotsIcon } from "../icons/VerticalDotsIcon";
 
 const statusColorMap: statusColor = {
   "Applied": "primary",
-  "AwaitingCall": "primary",
+  "AwaitingCall": "secondary",
   "Interview": "success",
   "Expired": "danger",
   "Filled": "danger",
   "Declined": "danger",
-  "Dead": "warning",
+  "Dead": "danger",
 };
 
 interface Props {
@@ -62,7 +62,7 @@ export default function JobApplicationsTable({
     bottomContent={bottomContent}
     bottomContentPlacement="outside"
     classNames={{
-      wrapper: "max-h-[382px]",
+      wrapper: "max-h-[700px]",
     }}
     sortDescriptor={sortDescriptor}
     topContent={topContent}
@@ -83,7 +83,7 @@ export default function JobApplicationsTable({
 
     <TableBody emptyContent={"No job applications found"}>
       {jobApplications.map(({
-        id, url, title, jobId, jobRef, contactName, telephone, appliedDate, status,
+        id, url, title, jobId, jobRef, contactName, company, telephone, appliedDate, status,
       }: IJobApplication) => (
         <TableRow key={id}>
           <TableCell>
@@ -102,7 +102,7 @@ export default function JobApplicationsTable({
           <TableCell>
             <User
               name={contactName}
-              description={'company'}
+              description={company}
               avatarProps={{
                 src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                 isBordered: false,

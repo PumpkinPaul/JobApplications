@@ -6,6 +6,10 @@ public class JobApplication
 {
     public int Id { get; set; }
 
+    [Required]
+    [MaxLength(128)]
+    public string Title { get; set; } = "";
+
     [MaxLength(255)]
     public string Url { get; set; } = "";
 

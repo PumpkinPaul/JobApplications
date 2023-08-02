@@ -23,6 +23,7 @@ export interface IJobApplication {
   jobId: string;
   jobRef: string;
   contactName: string;
+  company: string;
   telephone: string;
   appliedDate: string;
   status: ApplicationStatus;
@@ -54,7 +55,7 @@ export default function JobApplications() {
   const [jobApplications, setJobApplications] = useState<IJobApplication[]>([]);
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState<Selection>(new Set(DEFAULT_STATUS_FILTERS)); //("all)")
-  const [rowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(10);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "appliedDate",
     direction: "ascending",
