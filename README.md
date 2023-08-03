@@ -22,7 +22,10 @@ This project is an experiment trying to create a solution template with Minimal 
 
 - Blazor
   
-- React (coming soon)
+- React
+  - [NextUI](https://nextui.org/)
+  - [React Router]([https://react-icons.github.io/react-icons](https://reactrouter.com/en/main))
+  - [react-icons](https://react-icons.github.io/react-icons)
 
 - ASP.NET MVC (coming soon)
 
