@@ -14,13 +14,15 @@ import JobApplicationsTableCreate from './components/JobApplicationsTableCreate'
 
 //https://reactrouter.com/en/main/start/tutorial
 
+const apiUrl = "https://localhost:7176/api";
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <JobApplications />,
     errorElement: <ErrorPage />,
     loader: async () => {
-      return fetch('https://localhost:7176/api/jobapplication')
+      return fetch(`${apiUrl}/jobapplication`)
         .then((response) => response.json())
     }
   }, {
@@ -31,11 +33,13 @@ const router = createBrowserRouter([
 
       switch (request.method) {
         case "POST": {
-          let formData = await request.formData();
-          console.log('/create:POST', formData);
-          let contactName = formData.get("contactName");
-          //return fakeUpdateProject(name);
-          return {};
+          //const data = Object.fromEntries(await request.formData());
+          const data = await request.formData();
+          return await fetch(`${apiUrl}/jobapplication`, {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
         }
         default: {
           throw new Response("", { status: 405 });
@@ -51,7 +55,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <NextUIProvider>
-      <main className="text-foreground bg-background md:container md:mx-auto p-5 ">
+      <main className="text-foreground bg-background md:container md:mx-auto p-5 text-sm">
         <RouterProvider router={router} />
       </main>
     </NextUIProvider>
