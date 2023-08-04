@@ -130,35 +130,37 @@ export default function JobApplications() {
 
 
   return (
-    <>
-      <h1 className="text-6xl">Job Applications</h1>
-      <Spacer y={8} />
-      <JobApplicationsTable
-        jobApplications={sortedJobApplications}
-        headerColumns={headerColumns}
-        topContent={
-          <JobApplicationsTableTopContent
-            statusOptions={statusOptions}
-            filterValue={filterValue}
-            onSearchClear={() => setFilterValue('')}
-            onSearchChange={(e) => onSearchChange(e.target.value)}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-          />
-        }
-        bottomContent={
-          <JobApplicationsTableBottomContent
-            hasSearchFilter={hasSearchFilter}
-            page={page}
-            pages={pages}
-            onPageChange={setPage}
-            onPreviousPage={onPreviousPage}
-            onNextPage={onNextPage}
-          />
-        }
-        sortDescriptor={sortDescriptor}
-        setSortDescriptor={setSortDescriptor}
-      />
-    </>
+    <div className="grid h-screen place-items-center ">
+      <div className="container mx-auto bg-zinc-950 rounded-lg p-4 m-2 border-2 border-solid border-zinc-900 shadow-2xl">
+        <h1 className="text-3xl">Job <span className="font-thin text-slate-600">Applications</span></h1>
+        <Spacer y={8} />
+        <JobApplicationsTable
+          jobApplications={sortedJobApplications}
+          headerColumns={headerColumns}
+          topContent={
+            <JobApplicationsTableTopContent
+              statusOptions={statusOptions}
+              filterValue={filterValue}
+              onSearchClear={() => setFilterValue('')}
+              onSearchChange={(e) => onSearchChange(e.target.value)}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
+          }
+          bottomContent={
+            <JobApplicationsTableBottomContent
+              hasSearchFilter={hasSearchFilter}
+              page={page}
+              pages={pages}
+              onPageChange={setPage}
+              onPreviousPage={onPreviousPage}
+              onNextPage={onNextPage}
+            />
+          }
+          sortDescriptor={sortDescriptor}
+          setSortDescriptor={setSortDescriptor}
+        />
+      </div>
+    </div>
   );
 }

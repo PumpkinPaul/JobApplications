@@ -10,7 +10,7 @@ import {
 import ErrorPage from './ErrorPage';
 
 import JobApplications from './components/JobApplications';
-import JobApplicationsTableCreate from './components/JobApplicationsTableCreate';
+import JobApplicationsTableCreate from './components/JobApplicationsCreate';
 
 //https://reactrouter.com/en/main/start/tutorial
 
@@ -24,7 +24,22 @@ const router = createBrowserRouter([
     loader: async () => {
       return fetch(`${apiUrl}/jobapplication`)
         .then((response) => response.json())
-    }
+    },
+    action: async ({ request }) => {
+      switch (request.method) {
+        case "DELETE": {
+          var id = await request.json();
+          await fetch(`${apiUrl}/jobapplication/${id}`, {
+            method: 'delete',
+          });
+
+          return null;
+        }
+        default: {
+          throw new Response("", { status: 405 });
+        }
+      }
+    },
   }, {
     path: "create",
     element: <JobApplicationsTableCreate />,
@@ -33,8 +48,10 @@ const router = createBrowserRouter([
 
       switch (request.method) {
         case "POST": {
-          //const data = Object.fromEntries(await request.formData());
-          const data = await request.formData();
+          //Post good data
+          const data = Object.fromEntries(await request.formData());
+          //force a validation failure
+          //const data = await request.formData();
           return await fetch(`${apiUrl}/jobapplication`, {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -55,7 +72,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <NextUIProvider>
-      <main className="text-foreground bg-background md:container md:mx-auto p-5 text-sm">
+      <main className="text-foreground md:container md:mx-auto p-0 text-sm">
         <RouterProvider router={router} />
       </main>
     </NextUIProvider>

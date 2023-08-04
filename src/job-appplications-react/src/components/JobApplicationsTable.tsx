@@ -1,7 +1,5 @@
-import {
-  SortDescriptor
-} from "@react-types/shared";
-
+import { useSubmit } from "react-router-dom";
+import { SortDescriptor } from "@react-types/shared";
 import {
   Chip,
   Button,
@@ -18,14 +16,11 @@ import {
   TableCell,
   User,
 } from "@nextui-org/react";
-
 import {
   IJobApplication,
   IHeaderColumn,
   statusColor
 } from "./JobApplications";
-
-
 import { VerticalDotsIcon } from "../icons/VerticalDotsIcon";
 
 const statusColorMap: statusColor = {
@@ -55,14 +50,19 @@ export default function JobApplicationsTable({
   sortDescriptor,
   setSortDescriptor,
 }: Props): JSX.Element {
+
+  const submit = useSubmit();
+
   return <Table
     aria-label="Job applications table"
-    isStriped
+    isStriped={false}
     isHeaderSticky
+    removeWrapper
     bottomContent={bottomContent}
     bottomContentPlacement="outside"
     classNames={{
-      wrapper: "max-h-[700px]",
+      wrapper: "max-h-[710px]",
+      td: "py-1 border-b-2 border-solid border-zinc-800",
     }}
     sortDescriptor={sortDescriptor}
     topContent={topContent}
@@ -106,7 +106,8 @@ export default function JobApplicationsTable({
               avatarProps={{
                 src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                 isBordered: false,
-                color: "primary"
+                color: "primary",
+                size: "sm"
               }} />
           </TableCell>
           <TableCell>{telephone}</TableCell>
@@ -124,9 +125,13 @@ export default function JobApplicationsTable({
                     <VerticalDotsIcon className="text-default-400" width={undefined} height={undefined} />
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu>
+                <DropdownMenu aria-label="Row actions">
                   <DropdownItem>Edit</DropdownItem>
-                  <DropdownItem>Delete</DropdownItem>
+                  <DropdownItem onClick={(e) => {
+                    if (window.confirm("Are you sure you want to the job appliation")) {
+                      submit(id, { method: "delete", encType: "application/json" });
+                    }
+                  }}>Delete</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -134,5 +139,5 @@ export default function JobApplicationsTable({
         </TableRow>
       ))}
     </TableBody>
-  </Table>;
+  </Table >;
 }
