@@ -6,6 +6,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import {
   createBrowserRouter,
   RouterProvider,
+  redirect,
 } from "react-router-dom";
 import ErrorPage from './ErrorPage';
 
@@ -52,11 +53,17 @@ const router = createBrowserRouter([
           const data = Object.fromEntries(await request.formData());
           //force a validation failure
           //const data = await request.formData();
-          return await fetch(`${apiUrl}/jobapplication`, {
+          const res = await fetch(`${apiUrl}/jobapplication`, {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
           });
+
+          console.log('res', res);
+          if (res.ok) {
+            return redirect("/");;
+          }
+          return res;
         }
         default: {
           throw new Response("", { status: 405 });

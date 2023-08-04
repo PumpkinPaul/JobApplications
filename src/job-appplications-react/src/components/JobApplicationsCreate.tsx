@@ -69,7 +69,7 @@ const JobApplicationsTableCreate = () => {
       <div className="container mx-auto max-w-2xl bg-zinc-950 rounded-lg p-4 m-2 border-2 border-solid border-zinc-900">
         <h1 className="text-3xl">Create <span className="font-thin text-slate-600">New Application</span></h1>
         <Spacer y={2} />
-        <Link as={RouterLink} href="/?back=true"><BiChevronsLeft /> Back to list</Link>
+        <Link as={RouterLink} href="/"><BiChevronsLeft /> Back to list</Link>
         <Spacer y={4} />
         {errors && (
           <>
