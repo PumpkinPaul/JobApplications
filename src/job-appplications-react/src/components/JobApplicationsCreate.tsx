@@ -48,6 +48,7 @@ const PwcInput = ({
       variant='bordered'
       color="primary"
       labelPlacement="inside"
+      autoComplete="off"
       endContent={
         <div className="text-2xl text-default-400 pointer-events-none flex-shrink-0">{icon}</div>
       }

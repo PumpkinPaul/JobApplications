@@ -128,7 +128,6 @@ export default function JobApplications() {
     setJobApplications(data);
   }, [data]);
 
-
   return (
     <div className="grid h-screen place-items-center ">
       <div className="container mx-auto bg-zinc-950 rounded-lg p-4 m-2 border-2 border-solid border-zinc-900 shadow-2xl">

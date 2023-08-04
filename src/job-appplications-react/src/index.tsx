@@ -30,11 +30,13 @@ const router = createBrowserRouter([
       switch (request.method) {
         case "DELETE": {
           var id = await request.json();
-          await fetch(`${apiUrl}/jobapplication/${id}`, {
+          const res = await fetch(`${apiUrl}/jobapplication/${id}`, {
             method: 'delete',
           });
 
-          return null;
+          await new Promise((res) => setTimeout(res, 500))
+
+          return res;
         }
         default: {
           throw new Response("", { status: 405 });
@@ -45,8 +47,6 @@ const router = createBrowserRouter([
     path: "create",
     element: <JobApplicationsTableCreate />,
     action: async ({ request, params }) => {
-      console.log('action: async ({ request, params })');
-
       switch (request.method) {
         case "POST": {
           //Post good data
@@ -59,7 +59,6 @@ const router = createBrowserRouter([
             body: JSON.stringify(data)
           });
 
-          console.log('res', res);
           if (res.ok) {
             return redirect("/");;
           }
