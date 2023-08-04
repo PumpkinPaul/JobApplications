@@ -16,7 +16,8 @@ import {
   BiSolidBuildingHouse,
   BiSolidEnvelope,
   BiSolidNotepad,
-  BiSolidUserCircle, BiWorld
+  BiSolidUserCircle,
+  BiWorld,
 } from "react-icons/bi";
 import { PiPhoneCallFill } from "react-icons/pi";
 
