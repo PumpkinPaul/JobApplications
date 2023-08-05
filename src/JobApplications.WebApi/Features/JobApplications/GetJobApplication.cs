@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace JobApplications.WebApi.Features.JobApplications;
 
@@ -35,6 +36,9 @@ public class GetJobApplication : ICarterModule
         public string Url { get; set; } = "";
 
         public string UrlDisplay => Url.Split('/').Last();
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public JobType JobType { get; init; }
 
         [DisplayName("Contact")]
         public string ContactName { get; set; } = "";

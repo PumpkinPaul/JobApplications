@@ -27,5 +27,8 @@ public class JobApplication
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ApplicationStatus Status { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public JobType JobType { get; set; }
+
     public string Notes { get; set; } = "";
 }

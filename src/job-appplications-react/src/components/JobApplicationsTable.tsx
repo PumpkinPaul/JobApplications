@@ -8,6 +8,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
   Link,
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
@@ -23,9 +24,15 @@ import { PiPhoneCallFill } from "react-icons/pi";
 import {
   IJobApplication,
   IHeaderColumn,
+  jobTypeColor,
   statusColor
 } from "./JobApplications";
 import { VerticalDotsIcon } from "../icons/VerticalDotsIcon";
+
+const jobTypeColorMap: jobTypeColor = {
+  "Contract": "success",
+  "Permanent": "secondary",
+};
 
 const statusColorMap: statusColor = {
   "Applied": "primary",
@@ -91,7 +98,7 @@ export default function JobApplicationsTable({
 
       <TableBody emptyContent={"No job applications found"}>
         {jobApplications.map(({
-          id, url, title, jobId, jobRef, contactName, company, telephone, appliedDate, status,
+          id, url, title, jobId, jobRef, jobType, contactName, company, telephone, appliedDate, status,
         }: IJobApplication) => (
           <TableRow key={id}>
             <TableCell>
@@ -104,9 +111,16 @@ export default function JobApplicationsTable({
               >
                 {title}
               </Link>
+              <span className="block">
+                <Chip className="text-zinc-500 text-tiny border-none gap-1" color={jobTypeColorMap[jobType] || "primary"} size="sm" variant="dot">
+                  {jobType}
+                </Chip>
+              </span>
             </TableCell>
-            <TableCell>{jobId}</TableCell>
-            <TableCell>{jobRef}</TableCell>
+            <TableCell>
+              {jobId}
+              <span className="block text-zinc-500 text-tiny">{jobRef}</span>
+            </TableCell>
             <TableCell>
               <User
                 name={contactName}
@@ -130,7 +144,7 @@ export default function JobApplicationsTable({
             </TableCell>
             <TableCell>
               <div className="relative flex justify-end items-center gap-2">
-                <Dropdown className="bg-background border-1 border-default-200">
+                <Dropdown className="border-1 border-default-200">
                   <DropdownTrigger>
                     <Button isIconOnly radius="full" size="sm" variant="light">
                       <VerticalDotsIcon className="text-default-400" width={undefined} height={undefined} />
@@ -138,10 +152,17 @@ export default function JobApplicationsTable({
                   </DropdownTrigger>
                   <DropdownMenu aria-label="Row actions">
                     <DropdownItem>Edit</DropdownItem>
-                    <DropdownItem onClick={() => {
-                      setSelectedId(id)
-                      onOpen();
-                    }}>Delete</DropdownItem>
+                    <DropdownItem
+                      className="text-danger align-top"
+                      color="danger"
+                      description="Permanently delete the application"
+                      endContent={<BiTrash size={20} className="align-top" />}
+                      onClick={() => {
+                        setSelectedId(id)
+                        onOpen();
+                      }}>
+                      Delete
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>

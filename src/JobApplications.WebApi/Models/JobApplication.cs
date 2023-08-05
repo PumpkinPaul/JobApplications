@@ -20,6 +20,9 @@ public class JobApplication
     public string JobRef { get; set; } = "";
 
     [Required]
+    public JobType JobType { get; set; } = JobType.Contract;
+
+    [Required]
     [MaxLength(50)]
     public string ContactName { get; set; } = "";
 

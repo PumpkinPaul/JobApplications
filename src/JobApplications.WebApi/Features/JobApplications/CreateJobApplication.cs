@@ -32,6 +32,9 @@ public sealed class CreateJobApplication : ICarterModule
 
         public string JobRef { get; set; } = "";
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public JobType JobType { get; set; } = JobType.Contract;
+
         public string ContactName { get; set; } = "";
 
         public string Telephone { get; set; } = "";
@@ -56,6 +59,7 @@ public sealed class CreateJobApplication : ICarterModule
             RuleFor(r => r.Url).MaximumLength(255).NotEqual("error");
             RuleFor(r => r.JobId).NotEmpty().MaximumLength(50);
             RuleFor(r => r.JobRef).MaximumLength(50);
+            RuleFor(r => r.JobType).IsInEnum();
             RuleFor(r => r.ContactName).NotEmpty().MaximumLength(50);
 
             RuleFor(r => r.Telephone).MaximumLength(50);

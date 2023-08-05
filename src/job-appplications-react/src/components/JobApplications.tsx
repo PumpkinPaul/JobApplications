@@ -15,6 +15,8 @@ import JobApplicationsTableTopContent from "./JobApplicationsTableTopContent";
 import JobApplicationsTableBottomContent from "./JobApplicationsTableBottomContent";
 
 type ApplicationStatus = "Applied" | "AwaitingCall" | "Interview" | "Expired" | "Declined" | "Filled" | "Dead";
+type JobType = "Contract" | "Permanent";
+
 const statusOptions = ["Applied", "AwaitingCall", "Interview", "Expired", "Declined", "Filled", "Dead"];
 
 export interface IJobApplication {
@@ -23,6 +25,7 @@ export interface IJobApplication {
   title: string;
   jobId: string;
   jobRef: string;
+  jobType: JobType;
   contactName: string;
   company: string;
   telephone: string;
@@ -31,7 +34,8 @@ export interface IJobApplication {
   notes?: string;
 }
 
-export type statusColor = { [key in ApplicationStatus]: "success" | "danger" | "default" | "primary" | "secondary" | "warning" | undefined }
+export type jobTypeColor = { [key in JobType]: "success" | "secondary" | undefined };
+export type statusColor = { [key in ApplicationStatus]: "success" | "danger" | "default" | "primary" | "secondary" | "warning" | undefined };
 
 export interface IHeaderColumn {
   name: string,
@@ -41,8 +45,7 @@ export interface IHeaderColumn {
 
 const headerColumns: IHeaderColumn[] = [
   { name: "Title", uid: "title" },
-  { name: "Job Id", uid: "jobId" },
-  { name: "Ref", uid: "jobRef" },
+  { name: "Job Id / Ref", uid: "jobId" },
   { name: "Contact", uid: "contact", sortable: true },
   { name: "Telephone", uid: "telephone" },
   { name: "Applied", uid: "applied", sortable: true },
@@ -71,7 +74,11 @@ export default function JobApplications() {
 
     if (hasSearchFilter) {
       filteredJobApplications = filteredJobApplications.filter((jobApplication) =>
-        jobApplication.contactName.toLowerCase().includes(filterValue?.toLowerCase() || ""),
+        jobApplication.title.toLowerCase().includes(filterValue?.toLowerCase() || "") ||
+        jobApplication.jobId.toLowerCase().includes(filterValue?.toLowerCase() || "") ||
+        jobApplication.contactName.toLowerCase().includes(filterValue?.toLowerCase() || "") ||
+        jobApplication.company.toLowerCase().includes(filterValue?.toLowerCase() || "") ||
+        jobApplication.jobType.toLowerCase().includes(filterValue?.toLowerCase() || ""),
       );
     }
     if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {

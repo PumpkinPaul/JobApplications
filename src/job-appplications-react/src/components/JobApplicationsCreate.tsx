@@ -1,6 +1,8 @@
 import { Form, useActionData } from "react-router-dom";
 import {
   Button,
+  RadioGroup,
+  Radio,
   Input,
   Link,
   Spacer,
@@ -86,6 +88,16 @@ const JobApplicationsTableCreate = () => {
           <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
             <PwcInput name="title" label="Title" placeholder="Title of the job" isRequired maxLength={128} icon={<BiWorld />} />
             <PwcInput name="url" label="Url" placeholder="https://cool-new-job.com" maxLength={255} icon={<BiSolidNotepad />} />
+            <RadioGroup
+              name="jobType"
+              label="Select Job Type"
+              orientation="horizontal"
+              isRequired
+              color="primary"
+            >
+              <Radio value="Contract" size="sm" color="success">Contract</Radio>
+              <Radio value="Permanent" size="sm" color="secondary">Permanent</Radio>
+            </RadioGroup>
             <PwcInput name="jobId" label="Job Id" isRequired maxLength={50} icon={<BiSolidFile />}
               validationState={errors?.errors["JobId"] ? "invalid" : "valid"}
               errorMessage={errors?.errors["JobId"] ? errors?.errors['JobId'][0] : ""}

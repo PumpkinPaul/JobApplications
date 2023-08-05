@@ -34,7 +34,7 @@ const JobApplicationsTableTopContent = ({
       <Input
         isClearable
         className="w-full sm:max-w-[44%]"
-        placeholder="Search contact name..."
+        placeholder="Search jobs..."
         startContent={<SearchIcon />}
         value={filterValue}
         onClear={onSearchClear}

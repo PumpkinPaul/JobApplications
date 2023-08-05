@@ -27,7 +27,7 @@ const JobApplicationsTableBottomContent = ({
       showControls
       showShadow
       color="primary"
-      isDisabled={hasSearchFilter}
+      isDisabled={false}
       page={page}
       total={pages}
       onChange={onPageChange}

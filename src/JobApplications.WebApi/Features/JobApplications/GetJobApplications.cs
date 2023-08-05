@@ -29,6 +29,9 @@ public class GetJobApplications : ICarterModule
 
         public string JobRef { get; init; } = "";
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public JobType JobType { get; init; }
+
         public string ContactName { get; init; } = "";
         
         public string Company { get; init; } = "";
@@ -40,7 +43,7 @@ public class GetJobApplications : ICarterModule
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ApplicationStatus Status { get; init; }
 
-		public string Notes { get; init; } = "";
+        public string Notes { get; init; } = "";
 
 		public string Title { get; init; } = "";
     }
