@@ -31,26 +31,31 @@ public class GetJobApplication : ICarterModule
 
     public record Result : IResult
     {
-        public int Id { get; set; }
+        public int Id { get; init; }
 
-        public string Url { get; set; } = "";
+        public string Url { get; init; } = "";
 
-        public string UrlDisplay => Url.Split('/').Last();
+        public string JobId { get; init; } = "";
+
+        public string JobRef { get; init; } = "";
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobType JobType { get; init; }
 
-        [DisplayName("Contact")]
-        public string ContactName { get; set; } = "";
+        public string ContactName { get; init; } = "";
 
-        public string Telephone { get; set; } = "";
+        public string Company { get; init; } = "";
 
-        [DisplayName("Applied")]
-        [DisplayFormat(DataFormatString = "{0:d}")]
-        public DateTime AppliedDate { get; set; } = DateTime.UtcNow;
+        public string Telephone { get; init; } = "";
 
-        [DisplayName("Status")]
-        public required string StatusDescription { get; set; }
+        public DateTime AppliedDate { get; init; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ApplicationStatus Status { get; init; }
+
+        public string Notes { get; init; } = "";
+
+        public string Title { get; init; } = "";
     }
 
     public sealed class MappingProfile : Profile

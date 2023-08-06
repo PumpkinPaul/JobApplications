@@ -17,7 +17,7 @@ public sealed class EditJobApplication : ICarterModule
         )
         .WithName(nameof(EditJobApplication))
         .WithTags(nameof(JobApplication))
-        .Produces(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status204NoContent)
         .ProducesValidationProblem();
     }
 
@@ -29,6 +29,14 @@ public sealed class EditJobApplication : ICarterModule
         public ApplicationStatus Status { get; set; } = ApplicationStatus.Applied;
 
         public string Notes { get; set; } = "";
+    }
+
+    public sealed class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
+        {
+            RuleFor(r => r.Status).IsInEnum();
+        }
     }
 
     public sealed class Handler : IRequestHandler<Command, IResult>
@@ -53,7 +61,7 @@ public sealed class EditJobApplication : ICarterModule
 
             await _db.SaveChangesAsync(cancellationToken);
 
-            return Results.Ok();
+            return Results.NoContent();
         }
     }
 }

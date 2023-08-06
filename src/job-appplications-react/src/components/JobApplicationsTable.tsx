@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useSubmit } from "react-router-dom";
+import { useSubmit, useNavigate } from "react-router-dom";
 import { SortDescriptor } from "@react-types/shared";
-import { BiTrash } from "react-icons/bi";
+import { BiEdit, BiTrash } from "react-icons/bi";
 import {
   Chip,
   Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  DropdownSection,
   DropdownTrigger,
   Link,
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
@@ -65,7 +64,9 @@ export default function JobApplicationsTable({
   const [selectedId, setSelectedId] = useState<number>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const submit = useSubmit();
+  const navigate = useNavigate();
 
   return <>
     <Table
@@ -151,14 +152,21 @@ export default function JobApplicationsTable({
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu aria-label="Row actions">
-                    <DropdownItem>Edit</DropdownItem>
+                    <DropdownItem
+                      endContent={<BiEdit size={18} className="align-top" />}
+                      onClick={() => {
+                        setSelectedId(id);
+                        navigate(`/edit/${id}`);
+                      }}>
+                      Edit
+                    </DropdownItem>
                     <DropdownItem
                       className="text-danger align-top"
                       color="danger"
                       description="Permanently delete the application"
                       endContent={<BiTrash size={20} className="align-top" />}
                       onClick={() => {
-                        setSelectedId(id)
+                        setSelectedId(id);
                         onOpen();
                       }}>
                       Delete

@@ -60,7 +60,7 @@ const PwcInput = ({
   );
 }
 
-const JobApplicationsTableCreate = () => {
+const JobApplicationsCreate = () => {
   const actionData = useActionData() as string;
   let errors;
   if (actionData) {
@@ -131,4 +131,4 @@ const JobApplicationsTableCreate = () => {
   );
 }
 
-export default JobApplicationsTableCreate;
+export default JobApplicationsCreate;
