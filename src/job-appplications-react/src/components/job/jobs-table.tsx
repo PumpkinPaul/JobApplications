@@ -3,37 +3,19 @@ import { useSubmit, useNavigate } from "react-router-dom";
 import { SortDescriptor } from "@react-types/shared";
 import { BiEdit, BiTrash } from "react-icons/bi";
 import {
-  Chip,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Link,
-  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-  User,
+  Chip, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
+  Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, User,
 } from "@nextui-org/react";
 import { PiPhoneCallFill } from "react-icons/pi";
-import {
-  IJobApplication,
-  IHeaderColumn,
-  jobTypeColor,
-  statusColor
-} from "./JobApplications";
-import { VerticalDotsIcon } from "../icons/VerticalDotsIcon";
+import { Job, HeaderColumn, jobTypeColor, statusColor } from "./job-types";
+import { VerticalDotsIcon } from "../../icons/VerticalDotsIcon";
 
 const jobTypeColorMap: jobTypeColor = {
   "Contract": "success",
   "Permanent": "secondary",
 };
 
-const statusColorMap: statusColor = {
+export const statusColorMap: statusColor = {
   "Applied": "primary",
   "AwaitingCall": "secondary",
   "Interview": "success",
@@ -44,15 +26,15 @@ const statusColorMap: statusColor = {
 };
 
 interface Props {
-  jobApplications: IJobApplication[],
-  headerColumns: IHeaderColumn[],
+  jobApplications: Job[],
+  headerColumns: HeaderColumn[],
   topContent: any,
   bottomContent: any,
   sortDescriptor: SortDescriptor,
   setSortDescriptor: (descriptor: SortDescriptor) => any,
 }
 
-export default function JobApplicationsTable({
+export default function JobsTable({
   jobApplications,
   headerColumns,
   topContent,
@@ -100,7 +82,7 @@ export default function JobApplicationsTable({
       <TableBody emptyContent={"No job applications found"}>
         {jobApplications.map(({
           id, url, title, jobId, jobRef, jobType, contactName, company, telephone, appliedDate, status,
-        }: IJobApplication) => (
+        }: Job) => (
           <TableRow key={id}>
             <TableCell>
               <Link color="primary"

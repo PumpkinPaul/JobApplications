@@ -1,12 +1,7 @@
-import {
-  PressEvent,
-} from "@react-types/shared";
-import {
-  Button,
-  Pagination,
-} from "@nextui-org/react";
+import { PressEvent } from "@react-types/shared";
+import { Button, Pagination } from "@nextui-org/react";
 
-const JobApplicationsTableBottomContent = ({
+const JobsPager = ({
   hasSearchFilter,
   page,
   pages,
@@ -43,4 +38,4 @@ const JobApplicationsTableBottomContent = ({
   </div>
 );
 
-export default JobApplicationsTableBottomContent;
+export default JobsPager;

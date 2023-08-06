@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import './App.css';
-import JobApplications from './components/JobApplications'
+import JobApplications from './routes/jobs-list'
 
 function App() {
   return (

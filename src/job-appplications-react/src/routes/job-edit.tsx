@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { Form, useActionData, useLoaderData } from "react-router-dom";
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Spacer, Textarea } from "@nextui-org/react";
-import RouterLink from "./RouterLink";
+import { Button, Chip, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Spacer, Textarea } from "@nextui-org/react";
+import RouterLink from "../components/shared/router-link";
 import { MdSave } from "react-icons/md";
 import { BiChevronsLeft, BiSolidErrorCircle } from "react-icons/bi";
-import { IJobApplication } from "./JobApplications";
+import { ApplicationStatus, Job } from "../components/job/job-types";
 import { ChevronDownIcon } from "../icons/ChevronDownIcon";
+import { statusColorMap } from "../components/job/jobs-table";
 
 const statusOptions = ["Applied", "AwaitingCall", "Interview", "Expired", "Declined", "Filled", "Dead"];
 
-const JobApplicationsEdit = () => {
-  const [status, setStatus] = useState("");
+export default function JobEdit() {
+  const [status, setStatus] = useState<ApplicationStatus>();
 
   const actionData = useActionData() as string;
   let errors;
@@ -19,7 +20,7 @@ const JobApplicationsEdit = () => {
     console.log(errors);
   }
 
-  const loaderData = useLoaderData() as IJobApplication;
+  const loaderData = useLoaderData() as Job;
   const { notes } = loaderData;
 
   useEffect(() => {
@@ -48,40 +49,25 @@ const JobApplicationsEdit = () => {
             <Dropdown>
               <DropdownTrigger>
                 <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
-                  {status}
+                  <Chip className="border-none gap-1" color={statusColorMap[status as ApplicationStatus] || "primary"} size="sm" variant="dot">
+                    {status}
+                  </Chip>
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={true}
-                selectionMode="single"
-                onAction={(key) => setStatus(key as string)}
-              >
+              <DropdownMenu disallowEmptySelection aria-label="Table Columns" closeOnSelect={true} selectionMode="single" onAction={(key) => setStatus(key as ApplicationStatus)}>
                 {statusOptions.map((status) => (
                   <DropdownItem key={status} className="capitalize">
-                    {status}
+                    <Chip className="text-zinc-500 text-tiny border-none gap-1" color={statusColorMap[status as ApplicationStatus] || "primary"} size="sm" variant="dot">
+                      {status}
+                    </Chip>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Textarea
-              name="notes"
-              label="Notes"
-              labelPlacement="inside"
-              placeholder="Enter details and updates about this job"
-              variant="bordered"
-              color="primary"
-              className="md:col-span-2"
-              defaultValue={notes}
-            />
+            <Textarea name="notes" label="Notes" labelPlacement="inside" placeholder="Enter details and updates about this job" variant="bordered" color="primary" className="md:col-span-2" defaultValue={notes} />
           </div>
           <Spacer y={8} />
-          <Button
-            type="submit"
-            color="primary"
-            endContent={<MdSave size={20} />}
-          >
+          <Button type="submit" color="primary" endContent={<MdSave size={20} />}>
             Save
           </Button>
         </Form >
@@ -89,5 +75,3 @@ const JobApplicationsEdit = () => {
     </div >
   );
 }
-
-export default JobApplicationsEdit;

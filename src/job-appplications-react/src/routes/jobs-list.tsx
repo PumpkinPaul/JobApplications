@@ -1,49 +1,20 @@
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
-import {
-  Selection,
-  SortDescriptor,
-  Spacer,
-} from "@nextui-org/react";
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Selection, SortDescriptor, Spacer } from "@nextui-org/react";
 import { useLoaderData } from "react-router-dom";
-import JobApplicationsTable from "./JobApplicationsTable";
-import JobApplicationsTableTopContent from "./JobApplicationsTableTopContent";
-import JobApplicationsTableBottomContent from "./JobApplicationsTableBottomContent";
-
-type ApplicationStatus = "Applied" | "AwaitingCall" | "Interview" | "Expired" | "Declined" | "Filled" | "Dead";
-type JobType = "Contract" | "Permanent";
+import { Job, HeaderColumn } from "../components/job/job-types"
+import JobsTable from "../components/job/jobs-table";
+import JobsFilter from "../components/job/jobs-filter";
+import JobsPager from "../components/job/jobs-pager";
 
 const statusOptions = ["Applied", "AwaitingCall", "Interview", "Expired", "Declined", "Filled", "Dead"];
 
-export interface IJobApplication {
-  id: number;
-  url: string;
-  title: string;
-  jobId: string;
-  jobRef: string;
-  jobType: JobType;
-  contactName: string;
-  company: string;
-  telephone: string;
-  appliedDate: string;
-  status: ApplicationStatus;
-  notes?: string;
+const apiUrl = "https://localhost:7176/api";
+export async function loader() {
+  return fetch(`${apiUrl}/jobapplication`)
+    .then((response) => response.json())
 }
 
-export type jobTypeColor = { [key in JobType]: "success" | "secondary" | undefined };
-export type statusColor = { [key in ApplicationStatus]: "success" | "danger" | "default" | "primary" | "secondary" | "warning" | undefined };
-
-export interface IHeaderColumn {
-  name: string,
-  uid: string,
-  sortable?: boolean,
-};
-
-const headerColumns: IHeaderColumn[] = [
+const headerColumns: HeaderColumn[] = [
   { name: "Title", uid: "title" },
   { name: "Job Id / Ref", uid: "jobId" },
   { name: "Contact", uid: "contact", sortable: true },
@@ -55,8 +26,8 @@ const headerColumns: IHeaderColumn[] = [
 
 const DEFAULT_STATUS_FILTERS = ["Applied", "AwaitingCall", "Interview"];
 
-export default function JobApplications() {
-  const [jobApplications, setJobApplications] = useState<IJobApplication[]>([]);
+export default function JobList() {
+  const [jobApplications, setJobApplications] = useState<Job[]>([]);
   const [filterValue, setFilterValue] = useState("");
   const [statusFilter, setStatusFilter] = useState<Selection>(new Set(DEFAULT_STATUS_FILTERS)); //("all)")
   const [rowsPerPage] = useState(10);
@@ -130,7 +101,7 @@ export default function JobApplications() {
     }
   }, []);
 
-  const data = useLoaderData() as IJobApplication[];
+  const data = useLoaderData() as Job[];
   useEffect(() => {
     setJobApplications(data);
   }, [data]);
@@ -140,11 +111,11 @@ export default function JobApplications() {
       <div className="container mx-auto bg-zinc-950 rounded-lg p-4 m-2 border-2 border-solid border-zinc-900 shadow-2xl">
         <h1 className="text-3xl">Job <span className="font-thin text-slate-600">Applications</span></h1>
         <Spacer y={8} />
-        <JobApplicationsTable
+        <JobsTable
           jobApplications={sortedJobApplications}
           headerColumns={headerColumns}
           topContent={
-            <JobApplicationsTableTopContent
+            <JobsFilter
               statusOptions={statusOptions}
               filterValue={filterValue}
               onSearchClear={() => setFilterValue('')}
@@ -154,7 +125,7 @@ export default function JobApplications() {
             />
           }
           bottomContent={
-            <JobApplicationsTableBottomContent
+            <JobsPager
               hasSearchFilter={hasSearchFilter}
               page={page}
               pages={pages}

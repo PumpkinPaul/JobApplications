@@ -1,18 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { NextUIProvider } from "@nextui-org/react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  redirect,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, redirect } from "react-router-dom";
 import ErrorPage from './ErrorPage';
-
-import JobApplications from './components/JobApplications';
-import JobApplicationsCreate from './components/JobApplicationsCreate';
-import JobApplicationsEdit from './components/JobApplicationsEdit';
+import JobsList, { loader as jobLoader } from './routes/jobs-list';
+import JobCreate from './routes/job-create';
+import JobEdit from './routes/job-edit';
+import './index.css';
 
 //https://reactrouter.com/en/main/start/tutorial
 
@@ -21,12 +16,9 @@ const apiUrl = "https://localhost:7176/api";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <JobApplications />,
+    element: <JobsList />,
     errorElement: <ErrorPage />,
-    loader: async () => {
-      return fetch(`${apiUrl}/jobapplication`)
-        .then((response) => response.json())
-    },
+    loader: jobLoader,
     action: async ({ request }) => {
       switch (request.method) {
         case "DELETE": {
@@ -46,7 +38,7 @@ const router = createBrowserRouter([
     },
   }, {
     path: "/create",
-    element: <JobApplicationsCreate />,
+    element: <JobCreate />,
     action: async ({ request }) => {
       switch (request.method) {
         case "POST": {
@@ -73,7 +65,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/edit/:id",
-    element: <JobApplicationsEdit />,
+    element: <JobEdit />,
     loader: async ({ params }) => {
       return fetch(`${apiUrl}/jobapplication/${params.id}`)
         .then((response) => response.json())
