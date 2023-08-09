@@ -11,7 +11,7 @@ import './index.css';
 
 //https://reactrouter.com/en/main/start/tutorial
 
-const apiUrl = "https://localhost:7176/api";
+const apiUrl = "http://localhost:5150/api";
 
 const router = createBrowserRouter([
   {
