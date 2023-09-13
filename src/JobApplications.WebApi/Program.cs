@@ -7,6 +7,7 @@ using JobApplications.WebApi.Data;
 using JobApplications.WebApi.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 const string ALLOW_ANY_CORS_POLICY= "AllowAnyCorsPolicy";
 
@@ -14,10 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var connectionString = "Server=localhost\\SQLEXPRESS;Database=JobApplications;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=true;";
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<JobApplicationContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(JobApplicationContext))
-        ?? throw new InvalidOperationException($"Connection string '{nameof(JobApplicationContext)}' not found.")));
+//builder.Configuration.GetConnectionString(nameof(JobApplicationContext))
+    options.UseSqlServer(connectionString
+        ?? throw new InvalidOperationException($"Connection string '{nameof(JobApplicationContext)}' not found."))); ;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

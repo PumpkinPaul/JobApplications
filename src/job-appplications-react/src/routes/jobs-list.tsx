@@ -8,7 +8,8 @@ import JobsPager from "../components/job/jobs-pager";
 
 const statusOptions = ["Applied", "AwaitingCall", "Interview", "Expired", "Declined", "Filled", "Dead"];
 
-const apiUrl = "http://localhost:5150/api";
+//const apiUrl = "http://localhost:5150/api";
+const apiUrl = "http://localhost:5000/api";
 export async function loader() {
   return fetch(`${apiUrl}/jobapplication`)
     .then((response) => response.json())
